@@ -1,0 +1,54 @@
+{
+  "name": "chartjs-plugin-outlabels4",
+  "version": "1.0.0",
+  "author": {
+    "name": "gagiD",
+    "url": "https://github.com/gagiD/chartjs-plugin-outlabels4"
+  },
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "dist",
+    "src/**/*.ts",
+    "src/**/*.js"
+  ],
+  "main": "dist/chartjs-plugin-outlabels4.js",
+  "module": "dist/chartjs-plugin-outlabels4.js",
+  "require": "dist/chartjs-plugin-outlabels4.cjs",
+  "umd": "dist/chartjs-plugin-outlabels4.umd.js",
+  "unpkg": "dist/chartjs-plugin-outlabels4.umd.min.js",
+  "jsdelivr": "dist/chartjs-plugin-outlabels4.umd.min.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "import": "./dist/chartjs-plugin-outlabels4.js",
+    "require": "./dist/chartjs-plugin-outlabels4.cjs",
+    "script": "./dist/chartjs-plugin-outlabels4.umd.min.js"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/chart.js": "^2.9.41",
+    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/parser": "^7.14.1",
+    "chart.js": "^4",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "rollup-plugin-dts": "^6.1.1",
+    "tslib": "^2.6.3",
+    "typescript": "^5.5.2",
+    "vite": "^5.3.1"
+  },
+  "peerDependencies": {
+    "chart.js": "^4"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "build:watch": "rollup -c -w",
+    "dev": "vite sample/",
+    "sample:legacy": "vite sample/legacy/",
+    "lint": "eslint '*/**/*.{js,ts}' --quiet --fix",
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
+  }
+}
