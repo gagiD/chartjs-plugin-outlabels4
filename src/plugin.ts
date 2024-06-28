@@ -1,4 +1,4 @@
-import { ChartType, Plugin } from 'chart.js'
+import { ArcElement, ChartMeta, ChartType, Plugin } from 'chart.js'
 import OutLabel from './OutLabel'
 import OutLabelsContext from './OutLabelsContext'
 import OutLabelsManager from './OutLabelsManager'
@@ -63,7 +63,8 @@ const OutLabelsPlugin: OutLabelsPlugin = {
     },
     afterDatasetDraw: function (chart, args) {
         const ctx = chart.ctx
-        const elements = args.meta.data
+        const meta = args.meta as ChartMeta<'doughnut' | 'pie', ArcElement>
+        const elements = meta.data
         ctx.save()
 
         const chartOutlabels = outLabelsManager.get(chart.id)
