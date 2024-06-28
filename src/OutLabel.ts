@@ -1,14 +1,10 @@
-import OutLabelsOptions, {
-    FontOptions,
-    PaddingOptions,
-    StringCallback,
-} from './OutLabelsOptions'
-import { resolve, toPadding } from 'chart.js/helpers'
-import { drawRoundedRect, getFontString, parseFont, textSize } from './helpers'
+import { drawRoundedRect, textSize } from './helpers'
 import Size from './Size'
 import { ArcElement, Point } from 'chart.js'
 import Rect from './Rect'
 import OutLabelsContext from './OutLabelsContext'
+import { OutLabelStyle } from './OutLabelsStyle'
+import { toFontString } from 'chart.js/helpers'
 
 export default class OutLabel {
     ctx: CanvasRenderingContext2D
@@ -16,15 +12,13 @@ export default class OutLabel {
     context: OutLabelsContext
     arc!: ArcElement
 
-    encodedText: string | StringCallback
     text: string
     lines: RegExpMatchArray
     label: string
     value: number
 
-    style: any
+    style: OutLabelStyle
 
-    length: number
     size: Size
 
     x1!: number
@@ -43,11 +37,11 @@ export default class OutLabel {
 
     constructor(
         ctx: CanvasRenderingContext2D,
+        context: OutLabelsContext,
         index: number,
-        config: OutLabelsOptions,
-        context: OutLabelsContext
+        style: OutLabelStyle
     ) {
-        if (!config.display) {
+        if (!style.display) {
             throw new Error('Label display property is set to false.')
         }
 
@@ -55,22 +49,21 @@ export default class OutLabel {
         this.index = index
         this.context = context
 
+        this.style = style
+
         // Init text
         const label = context.labels[index]
-        let text = resolve([config.text], context, index) as string
-        if (!text) text = '%l %p'
-
-        /* Replace label marker */
+        let text = this.style.text
         text = text.replace(/%l/gi, label)
 
         /* Replace value marker with possible precision value */
         ;(text.match(/%v\.?(\d*)/gi) || [])
-            .map(function (val) {
+            .map(val => {
                 const prec = val.replace(/%v\./gi, '')
                 if (prec.length) {
                     return +prec
                 } else {
-                    return config.valuePrecision
+                    return this.style.valuePrecision
                 }
             })
             .forEach(function (val) {
@@ -83,16 +76,16 @@ export default class OutLabel {
 
         /* Replace percent marker with possible precision value */
         ;(text.match(/%p\.?(\d*)/gi) || [])
-            .map(function (val) {
+            .map(val => {
                 const prec = val.replace(/%p\./gi, '')
                 if (prec.length) {
                     return +prec
                 } else {
-                    return config.percentPrecision
+                    return this.style.percentPrecision
                 }
             })
-            .forEach(function (val) {
-                let percentPrecision = config.percentPrecision
+            .forEach(val => {
+                let percentPrecision = this.style.percentPrecision
                 if (!isNaN(val)) {
                     percentPrecision = val
                 }
@@ -103,49 +96,17 @@ export default class OutLabel {
                     )
             })
 
-        // Count lines
         const lines = text.match(/[^\r\n]+/g)
-
-        // If no lines => nothing to display
         if (!lines || !lines.length) throw new Error('No text to show.')
 
-        // Remove unnecessary spaces
         for (let i = 0; i < lines.length; ++i) {
             lines[i] = lines[i].trim()
         }
 
-        this.encodedText = config.text
         this.text = text
         this.lines = lines
         this.label = label
         this.value = context.value
-
-        // Init style
-        const fontConfig = Object.assign(new FontOptions(), config.font)
-        this.style = {
-            backgroundColor: resolve(
-                [config.backgroundColor, 'black'],
-                context,
-                index
-            ),
-            borderColor: resolve([config.borderColor, 'black'], context, index),
-            borderRadius: resolve([config.borderRadius, 0], context, index),
-            borderWidth: resolve([config.borderWidth, 0], context, index),
-            lineWidth: resolve([config.lineWidth, 2], context, index),
-            lineColor: resolve([config.lineColor, 'black'], context, index),
-            color: resolve([config.color, 'white'], context, index),
-            font: parseFont(
-                (resolve([fontConfig]) as FontOptions) ?? fontConfig,
-                parseFloat(ctx.canvas.style.height.slice(0, -2))
-            ),
-            padding: toPadding(
-                resolve([config.padding], context, index) as PaddingOptions
-            ),
-            textAlign: resolve([config.textAlign, 'left'], context, index),
-        }
-
-        this.length =
-            (resolve([config.length, 40], context, index) as number) ?? 40
         this.size = textSize(ctx, this.lines, this.style.font)
     }
 
@@ -173,15 +134,12 @@ export default class OutLabel {
     }
 
     drawText(): void {
-        const font = this.style.font
-        const color = this.style.color
-
-        if (!this.lines.length || !color) {
+        if (!this.lines.length) {
             return
         }
 
-        this.ctx.font = getFontString(this.style.font)
-        this.ctx.fillStyle = color
+        this.ctx.font = toFontString(this.style.font)
+        this.ctx.fillStyle = this.style.color
         this.ctx.textAlign = this.nx < 0 ? 'right' : 'left'
         this.ctx.textBaseline = 'middle'
 
@@ -195,7 +153,7 @@ export default class OutLabel {
                 Math.round(this.size.width)
             )
 
-            y += font.lineSize
+            y += this.style.font.lineSize
         }
     }
 
@@ -213,7 +171,7 @@ export default class OutLabel {
         this.ctx.closePath()
 
         if (this.style.backgroundColor) {
-            this.ctx.fillStyle = this.style.backgroundColor || 'black'
+            this.ctx.fillStyle = this.style.backgroundColor
             this.ctx.fill()
         }
 
@@ -270,8 +228,8 @@ export default class OutLabel {
         const x1 = r * nx + cx
         const y1 = r * ny + cy
 
-        const x2 = x1 + nx * this.length
-        const y2 = y1 + ny * this.length
+        const x2 = x1 + nx * this.style.length
+        const y2 = y1 + ny * this.style.length
 
         this.x1 = x1
         this.y1 = y1

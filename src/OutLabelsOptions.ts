@@ -1,52 +1,45 @@
-import { ContextProxy } from 'chart.js/helpers'
+import {
+    FontSpec,
+    Scriptable,
+    ScriptableAndScriptableOptions,
+    ScriptableChartContext,
+} from 'chart.js'
+import OutLabelsContext from './OutLabelsContext'
 
-export class PaddingOptions {
-    top = 4
-    right = 4
-    bottom = 4
-    left = 4
+export type TRBL = {
+    top: number
+    right: number
+    bottom: number
+    left: number
 }
 
-export class FontOptions {
-    family = "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
-    size?: number
-    style?: 'normal' | 'italic' | 'oblique' | 'initial' | 'inherit' = 'normal'
-    weight?: string
-    resizable = true
+export type FontOptions = FontSpec & {
+    resizable?: boolean
     minSize?: number
     maxSize?: number
-    lineHeight = 1.2
-    lineSize = 0
 }
 
-export type BooleanCallback = (item: any) => boolean
-export type StringCallback = (item: any) => string
+export type OutLabelsOptions = {
+    display?: Scriptable<boolean, OutLabelsContext>
+    text?: Scriptable<string, OutLabelsContext>
 
-export default class OutLabelsOptions {
-    display: boolean | BooleanCallback = true
-    text: string | StringCallback = '%l %p'
-    textAlign = 'center'
-    color = 'white'
-    borderRadius = 0
-    borderWidth = 0
-    lineWidth = 2
-    length = 40
-    percentPrecision = 1
-    valuePrecision = 3
+    textAlign?: string
+    color?: string
+    borderRadius?: number
+    borderWidth?: number
+    lineWidth?: number
+    length?: number
+    percentPrecision?: number
+    valuePrecision?: number
 
-    padding: PaddingOptions = new PaddingOptions()
+    padding?: number | TRBL
 
-    font: FontOptions = new FontOptions()
+    font?: ScriptableAndScriptableOptions<
+        Partial<FontOptions>,
+        ScriptableChartContext
+    >
 
-    backgroundColor(context: ContextProxy): string {
-        return context.dataset.backgroundColor
-    }
-
-    borderColor(context: ContextProxy): string {
-        return context.dataset.backgroundColor
-    }
-
-    lineColor(context: ContextProxy): string {
-        return context.dataset.backgroundColor
-    }
+    backgroundColor?: Scriptable<string, OutLabelsContext>
+    borderColor?: Scriptable<string, OutLabelsContext>
+    lineColor?: Scriptable<string, OutLabelsContext>
 }

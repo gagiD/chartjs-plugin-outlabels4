@@ -1,60 +1,26 @@
-import { Chart } from 'chart.js'
-import { valueOrDefault, isNullOrUndef, toLineHeight } from 'chart.js/helpers'
-import { FontOptions } from './OutLabelsOptions'
+import { toFontString } from 'chart.js/helpers'
 import Size from './Size'
+import { FontStyle } from './OutLabelsStyle'
 
-export function getFontString(font: FontOptions): string {
-    if (!font || isNullOrUndef(font.size) || isNullOrUndef(font.family)) {
-        return ''
-    }
-
-    return (
-        (font.style ? font.style + ' ' : '') +
-        (font.weight ? font.weight + ' ' : '') +
-        font.size +
-        'px ' +
-        font.family
-    )
-}
-
-// @todo move this in Chart.helpers.canvas.textSize
-// @todo cache calls of measureText if font doesn't change?!
 export function textSize(
     ctx: CanvasRenderingContext2D,
     lines: RegExpMatchArray,
-    font: FontOptions
+    font: FontStyle
 ): Size {
     const prev = ctx.font
     let width = 0
 
-    ctx.font = getFontString(font)
+    ctx.font = toFontString(font)
 
     for (let i = 0; i < lines.length; ++i) {
         width = Math.max(ctx.measureText(lines[i]).width, width)
     }
 
     ctx.font = prev
-
     return {
         height: lines.length * font.lineSize,
         width: width,
     }
-}
-
-// @todo move this method in Chart.helpers.options.toFont
-export function parseFont(value: FontOptions, height: number): FontOptions {
-    const defaults = Chart.defaults
-    let size = valueOrDefault(value.size, defaults.font.size)
-
-    if (value.resizable) {
-        size = adaptTextSizeToHeight(height, value.minSize, value.maxSize)
-    }
-
-    value.lineSize = toLineHeight(value.lineHeight.toString(), size ?? 0)
-
-    value.size = size
-
-    return value
 }
 
 export function adaptTextSizeToHeight(

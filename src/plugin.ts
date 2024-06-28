@@ -1,21 +1,27 @@
-import { ArcElement, Chart, Plugin } from 'chart.js'
-import { resolve } from 'chart.js/helpers'
+import { ChartType, Plugin } from 'chart.js'
 import OutLabel from './OutLabel'
 import OutLabelsContext from './OutLabelsContext'
 import OutLabelsManager from './OutLabelsManager'
-import OutLabelsOptions from './OutLabelsOptions'
+import { OutLabelStyle } from './OutLabelsStyle'
+import { OutLabelsOptions } from './OutLabelsOptions'
 
-declare type OutLabelsPlugin = Plugin<'doughnut'>
+declare type OutLabelsPlugin = Plugin<'doughnut' | 'pie', OutLabelsOptions>
 
 const outLabelsManager = new OutLabelsManager()
 
-export default {
+declare module 'chart.js' {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    interface PluginOptionsByType<TType extends ChartType> {
+        outlabels?: OutLabelsOptions
+    }
+}
+
+const OutLabelsPlugin: OutLabelsPlugin = {
     id: 'outlabels',
     beforeInit: function (chart) {
         outLabelsManager.set(chart.id)
     },
-    afterDatasetUpdate: function (chart: Chart<'doughnut'>, args, options) {
-        const config = Object.assign(new OutLabelsOptions(), options)
+    afterDatasetUpdate: function (chart, args, options) {
         const labels = chart.config.data.labels
         const dataset = chart.data.datasets[args.index]
         const elements = args.meta.data
@@ -38,12 +44,12 @@ export default {
                 datasetIndex: args.index,
                 value: dataset.data[i],
                 percent: percent,
-            } as OutLabelsContext
+            } as OutLabelsContext // TODO: check typeing for this
 
-            const display = resolve([config.display, false], context, i)
-            if (display && el && chart.getDataVisibility(args.index)) {
+            const style = new OutLabelStyle(options, context, i)
+            if (style.display && el && chart.getDataVisibility(args.index)) {
                 try {
-                    newLabel = new OutLabel(ctx, i, config, context)
+                    newLabel = new OutLabel(ctx, context, i, style)
                 } catch (e) {
                     console.warn(e)
                     newLabel = null
@@ -55,7 +61,7 @@ export default {
 
         ctx.restore()
     },
-    afterDatasetDraw: function (chart: Chart<'doughnut'>, args) {
+    afterDatasetDraw: function (chart, args) {
         const ctx = chart.ctx
         const elements = args.meta.data
         ctx.save()
@@ -64,7 +70,7 @@ export default {
         if (!chartOutlabels) return
 
         chartOutlabels.forEach(label => {
-            label.positionCenter(elements[label.index] as ArcElement)
+            label.positionCenter(elements[label.index])
             label.updateRects()
         })
 
@@ -72,10 +78,12 @@ export default {
 
         chartOutlabels.forEach(label => {
             label.updateRects()
-            label.draw()
             label.drawLine()
+            label.draw()
         })
 
         ctx.restore()
     },
-} as OutLabelsPlugin
+}
+
+export default OutLabelsPlugin

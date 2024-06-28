@@ -22,9 +22,11 @@ new Chart<'doughnut'>('ctx', {
                 },
                 text: '%p',
                 color: 'white',
+                backgroundColor: 'red',
                 //stretch: 15,
                 percentPrecision: 2,
                 font: {
+                    size: 20,
                     resizable: true,
                     minSize: 10,
                     maxSize: 16,

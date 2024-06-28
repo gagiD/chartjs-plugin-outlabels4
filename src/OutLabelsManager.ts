@@ -64,7 +64,7 @@ export default class OutLabelsManager {
         return adjusted
     }
 
-    private recalculateX(chart: Chart<'doughnut'>, list: OutLabel[]) {
+    private recalculateX(chart: Chart<'doughnut' | 'pie'>, list: OutLabel[]) {
         if (list.length < 1) return
 
         const cx = (chart.chartArea.left + chart.chartArea.right) / 2
@@ -79,7 +79,7 @@ export default class OutLabelsManager {
             const dy = Math.abs(item.rect.y - cy)
             if (dy > maxY) {
                 const dx = item.rect.x - cx
-                const rA = r + item.length
+                const rA = r + item.style.length
                 rB =
                     Math.abs(dx) < rA
                         ? Math.sqrt((dy * dy) / (1 - (dx * dx) / rA / rA))
@@ -92,7 +92,7 @@ export default class OutLabelsManager {
         list.forEach(item => {
             const dy = Math.abs(item.rect.y - cy)
             // horizontal r is always same with original r because x is not changed.
-            const rA = r + item.length
+            const rA = r + item.style.length
             const rA2 = rA * rA
             // Use ellipse implicit function to calculate x
             const dx = Math.sqrt((1 - Math.abs((dy * dy) / rB2)) * rA2)
@@ -102,7 +102,7 @@ export default class OutLabelsManager {
         })
     }
 
-    avoidOverlap(chart: Chart<'doughnut'>): void {
+    avoidOverlap(chart: Chart<'doughnut' | 'pie'>): void {
         const labels = this.get(chart.id)
         if (labels) {
             const cx = (chart.chartArea.left + chart.chartArea.right) / 2
