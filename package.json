@@ -1,6 +1,6 @@
 {
   "name": "chartjs-plugin-outlabels4",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": {
     "name": "gagiD",
     "url": "https://github.com/gagiD/chartjs-plugin-outlabels4"
@@ -35,16 +35,24 @@
     "chart.js": "^4",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
+    "npm-run-all2": "^6.2.0",
+    "rimraf": "^5.0.7",
     "rollup-plugin-dts": "^6.1.1",
     "tslib": "^2.6.3",
     "typescript": "^5.5.2",
-    "vite": "^5.3.1"
+    "vite": "^5.3.1",
+    "vitest": "^1.6.0"
   },
   "peerDependencies": {
     "chart.js": "^4"
   },
   "scripts": {
     "build": "rollup -c",
+    "clean": "rimraf dist coverage",
+    "prepare": "npm-run-all clean lint test:ci build",
+    "test": "vitest",
+    "test:ci": "vitest run",
+    "coverage": "vitest run --coverage",
     "build:watch": "rollup -c -w",
     "dev": "vite sample/",
     "sample:legacy": "vite sample/legacy/",

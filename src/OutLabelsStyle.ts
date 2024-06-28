@@ -87,17 +87,25 @@ export class OutLabelStyle {
         this.padding = toPadding(options.padding ?? 4)
 
         const backgroundColor = resolve(
-            [options.backgroundColor],
+            [options.backgroundColor, context.dataset.backgroundColor],
             context,
             index
         )
         if (typeof backgroundColor == 'string')
             this.backgroundColor = backgroundColor
 
-        const borderColor = resolve([options.borderColor], context, index)
+        const borderColor = resolve(
+            [options.borderColor, context.dataset.borderColor],
+            context,
+            index
+        )
         if (typeof borderColor == 'string') this.borderColor = borderColor
 
-        const lineColor = resolve([options.lineColor], context, index)
+        const lineColor = resolve(
+            [options.lineColor, context.dataset.backgroundColor],
+            context,
+            index
+        )
         if (typeof lineColor == 'string') this.lineColor = lineColor
     }
 }
