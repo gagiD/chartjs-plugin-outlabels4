@@ -57,6 +57,7 @@ const OutLabelsPlugin: OutLabelsPlugin = {
             }
 
             if (newLabel) outLabelsManager.setLabel(chart.id, i, newLabel)
+            else outLabelsManager.removeLabel(chart.id, i)
         }
 
         ctx.restore()

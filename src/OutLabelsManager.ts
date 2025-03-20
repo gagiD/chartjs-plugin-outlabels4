@@ -16,7 +16,14 @@ export default class OutLabelsManager {
         const labels = this.get(id)
         if (!labels) return
 
-        labels?.set(number, label)
+        labels.set(number, label)
+    }
+
+    removeLabel(id: string, number: number): void {
+        const labels = this.get(id)
+        if (!labels) return
+
+        labels.delete(number)
     }
 
     private adjustQuadrant(list: OutLabel[]): boolean {
