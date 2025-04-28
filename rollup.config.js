@@ -50,6 +50,14 @@ export default [
   },
   {
     ...base,
+    output: {
+      ...commonOutput,
+      file: packageJson.require,
+      format: 'cjs',
+    },
+  },
+  {
+    ...base,
     input: './src/index.umd.ts',
     output: [
       {
