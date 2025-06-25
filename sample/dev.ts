@@ -71,11 +71,15 @@ const chart2 = new Chart('ctx2', {
     plugins: [OutLabels],
 })
 
+function getRandomData(length: number, max = 100) {
+    return Array.from({ length }, () => Math.floor(Math.random() * max))
+}
+
 export function changeData() {
-    chart1.config.data.datasets[0].data = [1, 15, 5, 12, 0]
+    chart1.config.data.datasets[0].data = getRandomData(5)
     chart1.update()
 
-    chart2.config.data.datasets[0].data = [12, 0, 52, 2, 40]
+    chart2.config.data.datasets[0].data = getRandomData(5)
     chart2.update()
 }
 

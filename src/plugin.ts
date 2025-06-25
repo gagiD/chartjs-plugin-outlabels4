@@ -72,8 +72,12 @@ const OutLabelsPlugin: OutLabelsPlugin = {
         if (!chartOutlabels) return
 
         chartOutlabels.forEach(label => {
-            label.positionCenter(elements[label.index])
-            label.updateRects()
+            const element = elements[label.index]
+
+            if (element) {
+                label.positionCenter(element)
+                label.updateRects()
+            }
         })
 
         outLabelsManager.avoidOverlap(chart)
