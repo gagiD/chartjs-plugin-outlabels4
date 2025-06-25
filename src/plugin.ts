@@ -28,6 +28,9 @@ const OutLabelsPlugin: OutLabelsPlugin = {
         const ctx = chart.ctx
 
         ctx.save()
+
+        outLabelsManager.removeMissingLabels(chart.id, elements.length)
+
         for (let i = 0; i < elements.length; ++i) {
             const el = elements[i]
             let newLabel = null

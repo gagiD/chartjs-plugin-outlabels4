@@ -12,18 +12,29 @@ export default class OutLabelsManager {
         return this.labels.get(id)
     }
 
-    setLabel(id: string, number: number, label: OutLabel): void {
+    setLabel(id: string, index: number, label: OutLabel): void {
         const labels = this.get(id)
         if (!labels) return
 
-        labels.set(number, label)
+        labels.set(index, label)
     }
 
-    removeLabel(id: string, number: number): void {
+    removeLabel(id: string, index: number): void {
         const labels = this.get(id)
         if (!labels) return
 
-        labels.delete(number)
+        labels.delete(index)
+    }
+
+    removeMissingLabels(id: string, maxIndex: number): void {
+        const labels = this.get(id)
+        if (!labels) return
+
+        for (const [key] of labels) {
+            if (key >= maxIndex) {
+                labels.delete(key)
+            }
+        }
     }
 
     private adjustQuadrant(list: OutLabel[]): boolean {

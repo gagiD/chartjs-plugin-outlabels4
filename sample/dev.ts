@@ -71,8 +71,30 @@ const chart2 = new Chart('ctx2', {
     plugins: [OutLabels],
 })
 
+function randomNum(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
 function getRandomData(length: number, max = 100) {
     return Array.from({ length }, () => Math.floor(Math.random() * max))
+}
+
+const possibleLabels = [
+    'Red',
+    'Orange',
+    'Yellow',
+    'Green',
+    'Blue',
+    'Purple',
+    'Pink',
+    'Teal',
+    'Brown',
+    'Gray',
+]
+
+function getRandomLabels(length: number) {
+    const shuffled = [...possibleLabels].sort(() => 0.5 - Math.random())
+    return shuffled.slice(0, length)
 }
 
 export function changeData() {
@@ -80,6 +102,21 @@ export function changeData() {
     chart1.update()
 
     chart2.config.data.datasets[0].data = getRandomData(5)
+    chart2.update()
+
+    const count = randomNum(4, 8)
+    const newLabels = getRandomLabels(count)
+    const newData = getRandomData(count)
+    chart2.config.data = {
+        labels: newLabels,
+        datasets: [
+            {
+                label: 'Dataset 1',
+                data: newData,
+                backgroundColor: newLabels,
+            },
+        ],
+    }
     chart2.update()
 }
 
